@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>BAMB</title>
+	<title>PMaps</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="apple-touch-icon-precomposed" href="pmaps.jpg" />
+
 	<link rel="stylesheet" href="leaflet-101/leaflet.css" />
 	<!--[if lte IE 8]><link rel="stylesheet" href="leaflet.ie.css" /><![endif]-->
 
@@ -18,15 +18,16 @@
 
 </head>
 <body>
-	<div id="map" style="width: 300px; height: 320px"></div>
+	<div id="map" style="width: 1880px; height: 850px"></div>
 	<p></p>
     <p>
-	<ul>
-	</ul>
+        <ul>
+        </ul>
     </p>
 
 	<script src="leaflet-101/leaflet.js"></script>
-		
+    <script src="leaflet-autolayers.js"></script>
+
 	<script>
 		function textBetween(thisText, startString, endString)
 		{
@@ -72,16 +73,16 @@
 				if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
 				   if (xmlhttp.status == 200) 
 				   {
-						// Parse Galileo data 
+				   		// Parse Galileo data 
 					    var galileoXml = xmlhttp.responseText;
-					    var galileoLines = galileoXml.split("\n");	
-				      
+					    var galileoLines = galileoXml.split("\n");  
+						
 						// For every line in the file
 						//for(var currentLine = 0; currentLine < 10; currentLine++)
 						for(var currentLine = 0; currentLine < galileoLines.length; currentLine++)
 						{
 							var thisLine = galileoLines[currentLine];
-					      
+							
 							// If this line is a point
 							if (thisLine.indexOf("<Point>") > 0)
 							{
@@ -91,15 +92,14 @@
 								var thisCoordinates = textBetween(thisLine, "<coordinates>", "</coordinates>");
 								var thisLongitude = textBetween(thisCoordinates, "start", ",");
 								var thisLatitude = textBetween(thisCoordinates, ",", ",");
-						  
+								
 								var thisUrl = "http://maps.google.com/maps?q="+thisLatitude+","+thisLongitude;
 								var thisLink="<a href="+thisUrl+" target=_blank>"+thisUrl+"</a>";
 
-var galileoLink = "<a href=http://localhost/Scripts/GPSToGalileo/gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude+">KML</a>";
-								var popupText = "<b>"+thisName+"</b>\n<br>"+thisDescription+"</br><br>"+thisLink+"</br><br>"+galileoLink+"</br>";
-						  
+								var popupText = "<b>"+thisName+"</b>\n<br>"+thisDescription+"</br><br>"+thisLink+"</br>";
+								
 								var thisMarker;
-						  
+								
 								var GalileoIcon = L.Icon.extend({
 									options: {
 										iconSize:     [29, 29],
@@ -107,7 +107,7 @@ var galileoLink = "<a href=http://localhost/Scripts/GPSToGalileo/gpsToGalileo.ph
 										popupAnchor:  [0, 0]
 									}
 								});
-						  
+								
 								var otherIcon = new GalileoIcon({iconUrl: 'images/other.png'});
 								var food_drinkIcon = new GalileoIcon({iconUrl: 'images/food_drink.png'});
 								var shopIcon = new GalileoIcon({iconUrl: 'images/shop.png'});
@@ -120,7 +120,7 @@ var galileoLink = "<a href=http://localhost/Scripts/GPSToGalileo/gpsToGalileo.ph
 								var residenceIcon = new GalileoIcon({iconUrl: 'images/residence.png'});
 								var sportIcon = new GalileoIcon({iconUrl: 'images/sport.png'});
 
-						  
+								
 								if (thisStyle == "#other.png")
 								{
 									thisMarker = L.marker([thisLatitude,thisLongitude], {icon: otherIcon}).addTo(map);
@@ -176,14 +176,14 @@ var galileoLink = "<a href=http://localhost/Scripts/GPSToGalileo/gpsToGalileo.ph
 									thisMarker = L.marker([thisLatitude,thisLongitude], {icon: sportIcon}).addTo(map);
 								}
 
-					      
+							
 								thisMarker.bindPopup(popupText).openPopup();
 
 								//alert(thisLatitude);
 							}
-					      
+							
 						} // end for every line in the KML file
-				  
+					    
 				   } // end if it loaded the KML
 				   else if (xmlhttp.status == 400) {
 					  alert('There was an error 400');
@@ -196,7 +196,7 @@ var galileoLink = "<a href=http://localhost/Scripts/GPSToGalileo/gpsToGalileo.ph
 
 			xmlhttp.open("GET", "Bookmarks/"+filename, true);
 			xmlhttp.send();
-			    
+				
 		}
 
 		function searchAddress()
@@ -209,11 +209,11 @@ var galileoLink = "<a href=http://localhost/Scripts/GPSToGalileo/gpsToGalileo.ph
 				if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
 				   if (xmlhttp.status == 200) 
 				   {
-						// Parse Google data 
+				   		// Parse Google data 
 					    var googleXml = xmlhttp.responseText + '';
-				  
+					    
 					    var googleJson = JSON.parse(googleXml);
-				  
+					    
 						var GoogleIcon = L.Icon.extend({
 							options: {
 							iconSize:     [20, 34],
@@ -222,26 +222,24 @@ var galileoLink = "<a href=http://localhost/Scripts/GPSToGalileo/gpsToGalileo.ph
 							}
 						});
 						var googleIcon = new GoogleIcon({iconUrl: 'images/gMarker.png'});
-						     
+					    			    
 					    for (var currentResult = 0; currentResult < googleJson["results"].length; currentResult++)
 					    {
 							var thisResult = googleJson["results"][currentResult];
 							var thisAddress = thisResult["formatted_address"];
 							var thisLatitude = thisResult["geometry"]["location"]["lat"];
 							var thisLongitude = thisResult["geometry"]["location"]["lng"];
-						  
+								
 							var thisUrl = "http://maps.google.com/maps?q="+thisLatitude+","+thisLongitude;
 							var thisLink="<a href="+thisUrl+" target=_blank>"+thisUrl+"</a>";
 
-						  
-var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude+">KML</a>";
-								var popupText = "<b>"+searchText+"</b>\n<br>"+thisAddress+"</br><br>"+thisLink+"</br><br>"+galileoLink+"</br>";
-						 
+							var popupText = "<b>"+searchText+"</b>\n<br>"+thisAddress+"</br><br>"+thisLink+"</br>";
+							
 							var thisMarker = L.marker([thisLatitude,thisLongitude], {icon: googleIcon}).addTo(map);
 							thisMarker.bindPopup(popupText).openPopup();
-					      
+							
 						}
-				  
+					    
 				   } // end if it loaded the KML
 				   else if (xmlhttp.status == 400) {
 					  alert('There was an error 400');
@@ -254,7 +252,7 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 
 			xmlhttp.open("GET", "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyC49dQLf5m5pTJ0wBuCJQoae9uxqYWjQhw&address="+searchText, true);
 			xmlhttp.send();
-			    
+				
 		} // end searchAddress
 
 		function searchQuery()
@@ -262,18 +260,18 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 			var searchText = document.getElementById("searchText").value;
 		
 			searchText=encodeURI(searchText);
-			      
+					
 			var xmlhttp = new XMLHttpRequest();
 
 			xmlhttp.onreadystatechange = function() {
 				if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
 				   if (xmlhttp.status == 200) 
 				   {
-						// Parse Google data 
+				   		// Parse Google data 
 					    var googleXml = xmlhttp.responseText + '';
-								     
+					    					    
 					    var googleJson = JSON.parse(googleXml);
-				  
+					    
 						var GoogleIcon = L.Icon.extend({
 							options: {
 							iconSize:     [20, 34],
@@ -284,33 +282,31 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 						var googleIcon = new GoogleIcon({iconUrl: 'images/gMarker.png'});
 
 						var thisStatus = googleJson["status"];
-				      
+						
 						if (thisStatus.indexOf("ZERO_RESULTS") >= 0)
 						{
 							alert("No results");
 						}
-				   
+					     
 					    for (var currentResult = 0; currentResult < googleJson["results"].length; currentResult++)
 					    {
 							var thisResult = googleJson["results"][currentResult];
 							var thisName = thisResult["name"];
 							var thisLatitude = thisResult["geometry"]["location"]["lat"];
 							var thisLongitude = thisResult["geometry"]["location"]["lng"];
-						  
+								
 							var thisUrl = "http://maps.google.com/maps?q="+thisLatitude+","+thisLongitude;
 							var thisLink="<a href="+thisUrl+" target=_blank>"+thisUrl+"</a>";
-					      
+							
 							searchText=decodeURI(searchText);
-					      
-						  
-var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude+">KML</a>";
-								var popupText = "<b>"+searchText+"</b>\n<br>"+thisName+"</br><br>"+thisLink+"</br><br>"+galileoLink+"</br>";
-						  
+							
+							var popupText = "<b>"+searchText+"</b>\n<br>"+thisName+"</br><br>"+thisLink+"</br>";
+							
 							var thisMarker = L.marker([thisLatitude,thisLongitude], {icon: googleIcon}).addTo(map);
 							thisMarker.bindPopup(popupText).openPopup();
-					      
+							
 						}
-				  
+					    
 				   } // end if it loaded the KML
 				   else if (xmlhttp.status == 400) {
 					  alert('There was an error 400');
@@ -323,12 +319,12 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 
 			var coordinates = document.getElementById("addCoordinates").value;
 			var thisRadius = document.getElementById("addCircleRadius").value;
-			var thisUrl = "googleMapsSearch.php?location="+coordinates+"&radius="+thisRadius+"&query="+searchText;
+			var thisUrl = "http://localhost/maps/googleMapsSearch.php?location="+coordinates+"&radius="+thisRadius+"&query="+searchText;
 			
 			xmlhttp.open("GET", thisUrl, true);
-				      
+						
 			xmlhttp.send();
-			    
+				
 		} // end searchQuery
 
 
@@ -360,7 +356,7 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 			
 			// Radius is in km
 			thisRadius = thisRadius * 1000;
-				      
+						
 			var thisCircle = L.circle([coordinatesArray[0],coordinatesArray[1]], thisRadius).addTo(map);
 			
 			thisCircle.setRadius(thisRadius);
@@ -376,7 +372,7 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 			map.removeLayer(mapTiles);
 
 //			var mapTiles = new L.tileLayer('mbtiles.php?db=Life14.mbtiles&z={z}&x={x}&y={y}', {
-			mapTiles = new L.tileLayer('rmapstiles.php?db='+mapFile+'&z={z}&x={x}&y={y}', {
+			mapTiles = new L.tileLayer('rmapstiles.php?db=maps/'+mapFile+'&z={z}&x={x}&y={y}', {
 				tms: true,
 				attribution: '',
 				opacity: 1
@@ -393,9 +389,9 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 			var centerVerticalShift = 20;
 			var centerHorizontalShift = 20;
 
-//		var zoomLevel = 14;
-//		var centerVerticalShift = 25.052398;
-//		var centerHorizontalShift = 121.558062;
+//    		var zoomLevel = 14;
+//    		var centerVerticalShift = 25.052398;
+//    		var centerHorizontalShift = 121.558062;
 
 			//map = new L.Map("map",{
 			//	layers: [mapTiles],
@@ -407,100 +403,6 @@ var galileoLink = "<a href=gpsToGalileo.php?gps="+thisLongitude+","+thisLatitude
 
 		}
 
-
-	</script>
-<script src="pct-trail-partial.js"></script>
-	<script src="AnimatedMarker.js"></script>
-    <script src="leaflet-autolayers.js"></script>
-	<script>
-function loop()
-{
-
-	var getLocation = function refreshGeo()
-	{
-
-		var peterLocation = function geoPeter(position) 
-		{
-			// alert("geopeter");
-			var timestamp = Math.round((new Date()).getTime() / 1000);
-			var lat = position.coords.latitude;
-			var lon = position.coords.longitude;
-			//lat = 10.763816;
-			//lon = 77.024621;
-
-			var temp = [];
-
-			//  document.getElementById('geo').innerHTML = 'Error: ' + error.message;
-
-			temp.push([lat, lon]);
-
-		// map.removeLayer(animatedMarker);
-			var previousMarker = i - 1;
-			var nextMarker = i + 2;
-	    map.removeLayer(animatedMarker);
-		// delete markers[i]; 
-
-			// animatedMarker.setLatLng(L.latLng(lat,lon));
-			var newMarker;
-			
-			var line = new L.polyline(temp),
-				newMarker = L.animatedMarker(line.getLatLngs(), 
-				{
-					autoStart: false,
-					distance: 500,
-					interval: 1000
-				});
-
-			map.addLayer(newMarker);
-			animatedMarker = newMarker;
-			markers[nextMarker] = animatedMarker;
-
-		}
-
-		// this is used when the visitor bottles it and hits the "Don't Share" option
-		var declinedLocation = function GEOdeclined(error) 
-		{
-			// alert("geodeclined");
-
-			var temp = [];
-
-			//  document.getElementById('geo').innerHTML = 'Error: ' + error.message;
-			lat = 10.669018;
-			lon = 77.003273;
-
-			temp.push([lat, lon]);
-
-			var line = new L.polyline(temp),
-				animatedMarker = L.animatedMarker(line.getLatLngs(), 
-					{
-						autoStart: false,
-						distance: 500,
-						interval: 1000
-					});
-
-			map.addLayer(animatedMarker);
-
-		}
-
-		navigator.geolocation.getCurrentPosition(peterLocation, declinedLocation);
-		//lat = 10.763816;
-		//lon = 77.024621;
-		//temp.push(lon);
-
-	} // end getLocation
-
-	i+= 1; 
-	/* Here is your code. Balabala...*/
-	// alert("refreshing");
-	getLocation();
-	
-	if (i===loop_length) clearInterval(handler);
-}
-
-function pan_map()
-{
-	map.panTo({lon: animatedMarker['_latlng'].lng, lat: animatedMarker['_latlng'].lat});;
-}
 
 	</script>
 	<script>
@@ -575,6 +477,9 @@ var control = L.control.autolayers(config).addTo(map);
 			var coordinates = latitude+","+longitude;
 			document.getElementById("addCoordinates").value = coordinates;
 		});
+
+		//map.addControl(layersControl);
+		
 		
 
 	</script>
@@ -597,35 +502,35 @@ var control = L.control.autolayers(config).addTo(map);
 			onclick="addGalileo('Taipei UBikes.kml');">
 				Taipei UBikes
 			</td>
-	</tr>
+    	</tr>
 	</table>
 	<table>
 		<tr>
 			<td>
-			<textarea id="addCoordinates" name="addCoordinates" rows="2" cols="40"></textarea>
-		</td>
+    			<textarea id="addCoordinates" name="addCoordinates" rows="2" cols="40"></textarea>
+    		</td>
 			<td style="width:100px;height:10px;background-color:#BBBBBB;text-align:center;"
 			onclick="addMarker();">
 				Add
 			</td>
-	</tr>
+    	</tr>
     </table>
     <table>
 		<tr>
 			<td>
-			<textarea id="addCircleRadius" name="addCircleRadius" rows="2" cols="10"></textarea>
-		</td>
+    			<textarea id="addCircleRadius" name="addCircleRadius" rows="2" cols="10"></textarea>
+    		</td>
 			<td style="width:50px;height:5px;background-color:#BBBBBB;text-align:center;"
 			onclick="addCircle();">
 				Circle
 			</td>
-	</tr>
+    	</tr>
 	</table>
     <table>
 		<tr>
 			<td>
-			<textarea id="searchText" name="searchText" rows="2" cols="10"></textarea>
-		</td>
+    			<textarea id="searchText" name="searchText" rows="2" cols="10"></textarea>
+    		</td>
 			<td style="width:50px;height:5px;background-color:#BBBBBB;text-align:center;"
 			onclick="searchAddress();">
 				Address
@@ -634,103 +539,7 @@ var control = L.control.autolayers(config).addTo(map);
 			onclick="searchQuery();">
 				Query
 			</td>
-	</tr>
+    	</tr>
 	</table>
-
-
-<script>
-var animatedMarker;
-
-// create geojson layer
-var geojson = new L.geoJson(pct);
-geojson.addTo(map);
-
-// temporary array to store geojson lat, lon
-var temp = [];
-
-var eachLayer = geojson.eachLayer(function (layer){
-
-
-	var coordinates = layer.feature.geometry.coordinates;
-	var len = coordinates.length;
-	var i = 0;
-	len = 0;
-
-	for (i; i<len; i++)
-	{
-		var lat = coordinates[i][1],
-		lon = coordinates[i][0];
-		// reverse order of lon, lat for L.polyline
-
-		lat = 10.663816;
-		lon = 77.014621;
-
-		lon = lon + i/10;
-		// getLocation();
-
-		//temp.push([lat, lon]);
-	}
-}); // end eachLayer
-
-
-var i = 0;
-var loop_length = 20;
-var loop_speed = 1000;
-
-var markers = new Array();
-
-var line = new L.polyline(temp),
-	animatedMarker = L.animatedMarker(line.getLatLngs(), 
-	{
-		autoStart: false,
-		distance: 500,
-		interval: 1000
-	});
-
-var handler = setInterval(loop, loop_speed);
-
-
-map.addLayer(animatedMarker);
-
-var flag = 0; // the variable used to signalise the animation stop
-
-
-pan_map(); // pan the map to the marker start position
-
-// set the interval timer
-var vInterval = setInterval(function()
-	{
-		if (flag == 1)
-		{
-			animatedMarker.stop();
-			clearInterval(vInterval); // stops the interval timing, also
-		}
-		pan_map(); // pan the map to follow the marker
-	}, 100);
-
-// delay start so that data has time to load
-Timeout = setTimeout(function()
-	{
-		animatedMarker.start();
-	}, 3000);
-
-// function to track animatedMarker's position
-// and stop it at given lat lon values
-var checkLatLon = function(e) 
-{
-	var lat = 32.608639206779,
-	lon = -116.49114320162762;
-	if (e.latlng.lng === lon && e.latlng.lat === lat)
-	{
-		flag = 1; // signals the animation can be stopped
-	}
-	refreshGeo();
-}
-
-// event listener to check animatedMarker's position
-// animatedMarker.on('move', checkLatLon);
-
-</script>
-
 </body>
 </html>
